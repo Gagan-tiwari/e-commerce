@@ -1,38 +1,157 @@
-.App {
-  text-align: center;
+/* General body styling */
+body {
+  background-color: rgb(240, 242, 244);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Navbar styling */
+.navbar {
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+/* Large screen dropdown menu display */
+@media (min-width: 1024px) {
+  .navbar .container .dropdown-menu {
+    display: block;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* Mobile Menu Styling */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 0; /* Initially closed */
+  overflow: hidden;
+  background-color: #ffffff;
+  transition: width 0.3s ease-in-out;
+  z-index: 60;
 }
 
-.App-link {
-  color: #61dafb;
+/* Open state for mobile menu */
+.mobile-menu.open {
+  width: 30%; /* Adjusts to 20% of the screen width when open */
+  box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
 }
 
-@keyframes App-logo-spin {
+/* Small screen menu button styling */
+.mobile-menu button {
+  color: #333333;
+}
+
+/* Slide down animation */
+@keyframes slideDown {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(-10%);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
   }
+}
+
+/* Slide up animation */
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10%);
+  }
+}
+
+.group:hover .dropdown-content {
+  display: block;
+}
+
+/* Container for the categories */
+.categories-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+/* Wrapper that contains all the cards */
+.categories-wrapper {
+  display: flex;
+  overflow-x: scroll;
+  scroll-behavior: smooth;
+  margin-left: 25px;
+}
+
+/* Individual category card */
+.category-card {
+  flex: 0 0 auto;
+  width: 450px;
+  height: 270px;
+  margin-right: 20px;
+  position: relative;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.category-card:hover {
+  transform: scale(1.05);
+}
+
+/* Image inside the card */
+.category-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* Name text at the bottom of the card */
+.category-name {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  color: white;
+  font-weight: bold;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(0, 0, 0, 0.5);
+  background-color: white;
+  font-size: 24px;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.scroll-btn.left {
+  left: 10px;
+}
+
+.scroll-btn.right {
+  right: 10px;
+}
+
+/* Hide scrollbar */
+.categories-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.categories-wrapper {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
