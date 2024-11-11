@@ -1,21 +1,18 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext"; // Adjust the path if needed
+import "../App.css";
 
-function Login({ onLogin }) {
+function Login() {
+  const { handleLogin } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/api/login/", {
-        email,
-        password,
-      });
-      onLogin(response.data.username);
+      await handleLogin({ email, password });
       navigate("/");
     } catch (error) {
       alert("Invalid credentials");
@@ -33,7 +30,7 @@ function Login({ onLogin }) {
       </div>
       <div className="lg:p-36 md:p-52 sm:20 p-8 w-full lg:w-1/2">
         <h1 className="text-2xl font-semibold mb-4">Login</h1>
-        <form onSubmit={handleLogin}>
+        <form onSubmit={onSubmit}>
           <div className="mb-4">
             <label htmlFor="email" className="block text-gray-600">
               Email
@@ -65,8 +62,6 @@ function Login({ onLogin }) {
               type="checkbox"
               id="remember"
               name="remember"
-              checked={remember}
-              onChange={() => setRemember(!remember)}
               className="text-red-500"
             />
             <label htmlFor="remember" className="text-green-900 ml-2">
