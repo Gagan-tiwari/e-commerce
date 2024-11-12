@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom"
-import axios from 'axios';
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 // const categories = [
 //   { id: 1, name: "LADDU GOPAL", image: require("../assets/5551304.jpg") },
@@ -14,7 +14,6 @@ import axios from 'axios';
 // ];
 
 function Categories() {
-
   const scrollContainerRef = useRef(null);
 
   const handleScroll = (direction) => {
@@ -33,7 +32,7 @@ function Categories() {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/products/');
+      const response = await axios.get("http://localhost:8000/api/products/");
       setProducts(response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -45,7 +44,7 @@ function Categories() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/categories/');
+      const response = await axios.get("http://localhost:8000/api/categories/");
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);

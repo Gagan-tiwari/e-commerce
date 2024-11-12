@@ -1,5 +1,10 @@
-import React, { useState } from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import "./App.css";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -9,7 +14,8 @@ import ProductsPage from "./ProductPage";
 import Navbar from "./pages/Navbar";
 import Home from "./pages/Home";
 import Footer from "./pages/Footer";
-import { AuthProvider, AuthContext } from './context/AuthContext';
+import UserProfile from "./pages/UserProfile";
+import { AuthProvider, AuthContext } from "./context/AuthContext";
 
 function App() {
   return (
@@ -22,8 +28,23 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Protected route for Cart */}
-          <Route path="/cart" element={<RequireAuth><Cart /></RequireAuth>} />
+          {/* Protected routes */}
+          <Route
+            path="/cart"
+            element={
+              <RequireAuth>
+                <Cart />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <RequireAuth>
+                <UserProfile />
+              </RequireAuth>
+            }
+          />
           <Route path="/product-list" element={<ProductList />} />
         </Routes>
         <Footer />
