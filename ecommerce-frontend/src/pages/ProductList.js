@@ -26,7 +26,6 @@ function ProductList() {
 
   return (
     <div>
-      {/* <h2>Products</h2> */}
       <div className="product-list">
         {products.map((product) => (
           <div key={product.id} className="product-item">

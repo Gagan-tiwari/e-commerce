@@ -8,7 +8,7 @@ function Home() {
         className="bg-cover bg-center h-64 text-white flex items-center justify-center"
         style={{ backgroundImage: `url(${require("../assets/26539.jpg")})` }}
       >
-        <h1 className="text-4xl font-bold text-black">
+        <h1 className="text-4xl font-bold text-black text-center">
           Welcome to Gagan Tiwari Decor
         </h1>
       </header>

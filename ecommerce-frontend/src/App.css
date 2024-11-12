@@ -38,6 +38,12 @@ body {
   box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
 }
 
+@media (max-width: 1024px) {
+  .mobile-menu.open {
+    width: 70%;
+  }
+}
+
 /* Small screen menu button styling */
 .mobile-menu button {
   color: #333333;
@@ -74,7 +80,7 @@ body {
 /* Container for the categories */
 .categories-container {
   position: relative;
-  width: 100%;
+  width: 95%;
   max-width: 100%;
   overflow: hidden;
   display: flex;
@@ -84,9 +90,10 @@ body {
 /* Wrapper that contains all the cards */
 .categories-wrapper {
   display: flex;
-  overflow-x: scroll;
+  overflow-x: auto;
   scroll-behavior: smooth;
   margin-left: 25px;
+  gap: 20px;
 }
 
 /* Individual category card */
@@ -94,7 +101,6 @@ body {
   flex: 0 0 auto;
   width: 450px;
   height: 270px;
-  margin-right: 20px;
   position: relative;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -129,13 +135,14 @@ body {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(0, 0, 0, 0.5);
-  background-color: white;
-  font-size: 24px;
+  color: rgb(248, 246, 246);
+  background-color: rgb(47, 149, 233);
+  font-size: 26px;
   padding: 10px;
   border: none;
   cursor: pointer;
   z-index: 1;
+  border-radius: 50%;
 }
 
 .scroll-btn.left {
@@ -154,4 +161,18 @@ body {
 .categories-wrapper {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@media (max-width: 1024px) {
+  .category-card {
+    flex: 0 0 50%; /* 2 cards per row on mid screens */
+    width: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .category-card {
+    flex: 0 0 100%; /* 1 card per row on small screens */
+    width: 100%;
+  }
 }
