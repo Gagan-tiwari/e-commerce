@@ -51,7 +51,7 @@ function Navbar() {
   };
 
   return (
-    <nav className="navbar ">
+    <nav className="navbar">
       <div className="container mx-auto flex items-center justify-between py-4 px-4 lg:px-8">
         <NavLink to="/" className="flex items-center">
           <img src={logo} alt="Logo" className="h-8 mr-2" />
@@ -89,28 +89,35 @@ function Navbar() {
           {isAuthenticated ? (
             <div className="relative group flex flex-col items-center">
               <Link to="/profile" className="flex items-center space-x-2">
-                <FaUser className="text-gray-700 text-xl" />
-                <span className="text-xs">{user?.username || "Profile"}</span>
+                <FaUser className="text-gray-700 text-xl hover:text-orange-500" />
+                <span className="text-m uppercase">
+                  {user?.username || "Profile"}
+                </span>
               </Link>
               <button
                 onClick={handleLogout}
-                className="text-xs text-red-500 mt-2"
+                className="dropdown-content hidden group-hover:block absolute right-0 mt-6 p-4 space-x-2 bg-white shadow-lg"
               >
-                Logout
+                <span className="text-gray-700 hover:bg-orange-500 hover:text-white p-2">
+                  Logout
+                </span>
               </button>
             </div>
           ) : (
             <div className="relative group flex flex-col items-center">
-              <FaUser className="text-gray-700 text-xl" />
+              <FaUser className="text-gray-700 text-xl hover:text-orange-500" />
               <span className="text-xs">Profile</span>
               <div className="dropdown-content hidden group-hover:block absolute right-0 mt-10 p-4 space-x-2 bg-white shadow-lg">
-                <Link to="/login" className="text-gray-700 hover:text-blue-500">
+                <Link
+                  to="/login"
+                  className="text-gray-700 hover:bg-orange-500 hover:text-white p-2"
+                >
                   Login
                 </Link>
                 <span className="text-orange-600">or</span>
                 <Link
                   to="/register"
-                  className="text-gray-700 hover:text-blue-500"
+                  className="text-gray-700  hover:bg-orange-500 hover:text-white p-2"
                 >
                   Register
                 </Link>
@@ -118,12 +125,12 @@ function Navbar() {
             </div>
           )}
           <div className="relative flex flex-col items-center">
-            <FaHeart className="text-gray-700 text-xl" />
+            <FaHeart className="text-gray-700 text-xl hover:text-orange-500" />
             <span className="text-xs">Like</span>
           </div>
           <Link to="/cart">
             <div className="relative flex flex-col items-center">
-              <FaShoppingCart className="text-gray-700 text-xl" />
+              <FaShoppingCart className="text-gray-700 text-xl hover:text-orange-500" />
               <span className="text-xs">Cart</span>
             </div>
           </Link>

@@ -1,21 +1,22 @@
 import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext"; // Adjust the path if needed
+import { AuthContext } from "../context/AuthContext";
 import "../App.css";
 
 function Login() {
-  const { handleLogin } = useContext(AuthContext);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { handleLogin } = useContext(AuthContext); // Get handleLogin from context
+  const [username, setUsername] = useState(""); // Track username
+  const [password, setPassword] = useState(""); // Track password
   const navigate = useNavigate();
 
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      await handleLogin({ email, password });
-      navigate("/");
+      await handleLogin(username, password); // Call handleLogin with username and password
+      navigate("/"); // Navigate to the homepage on successful login
     } catch (error) {
-      alert("Invalid credentials");
+      console.error("Login failed:", error); // Log error if login fails
+      alert("Invalid credentials. Please try again."); // Show error message to the user
     }
   };
 
@@ -24,7 +25,7 @@ function Login() {
       <div className="w-1/2 h-screen hidden lg:block">
         <img
           src={require("../assets/login.png")}
-          alt="Placeholder"
+          alt="Login Illustration"
           className="object-cover w-full h-full"
         />
       </div>
@@ -32,15 +33,15 @@ function Login() {
         <h1 className="text-2xl font-semibold mb-4">Login</h1>
         <form onSubmit={onSubmit}>
           <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-600">
-              Email
+            <label htmlFor="username" className="block text-gray-600">
+              Username
             </label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              id="username"
+              name="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
             />
           </div>
@@ -56,22 +57,6 @@ function Login() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
             />
-          </div>
-          <div className="mb-4 flex items-center">
-            <input
-              type="checkbox"
-              id="remember"
-              name="remember"
-              className="text-red-500"
-            />
-            <label htmlFor="remember" className="text-green-900 ml-2">
-              Remember Me
-            </label>
-          </div>
-          <div className="mb-6 text-blue-500">
-            <Link to="#" className="hover:underline">
-              Forgot Password?
-            </Link>
           </div>
           <button
             type="submit"

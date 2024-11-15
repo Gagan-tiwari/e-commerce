@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { register } from "../api/auth"; // Import register function from your API file
+import { register } from "../api/auth";
 
 function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [remember, setRemember] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -19,15 +18,8 @@ function Register() {
       return;
     }
 
-    if (!remember) {
-      setError("You must agree to the Terms and Conditions");
-      return;
-    }
-
     try {
-      // Attempt registration by sending data to the API
-      await register({ username, email, password });
-      // On success, redirect to login
+      await register(username, email, password); // Adjusted to match register function
       navigate("/login");
     } catch (error) {
       setError("Registration failed. Please try again.");
@@ -39,7 +31,7 @@ function Register() {
     <div className="bg-sky-100 flex justify-center items-center h-screen">
       <div className="w-1/2 h-screen hidden lg:block">
         <img
-          src={require("../assets/login.png")} // Optional image path
+          src={require("../assets/login.png")}
           alt="Register"
           className="object-cover w-full h-full"
         />
@@ -94,19 +86,6 @@ function Register() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
             />
-          </div>
-          <div className="mb-4 flex items-center">
-            <input
-              type="checkbox"
-              id="remember"
-              name="remember"
-              checked={remember}
-              onChange={() => setRemember(!remember)}
-              className="text-red-500"
-            />
-            <label htmlFor="remember" className="text-green-900 ml-2">
-              I agree to the Terms and Conditions
-            </label>
           </div>
           {error && <p className="text-red-500">{error}</p>}
           <button

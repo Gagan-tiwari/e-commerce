@@ -7,21 +7,33 @@ function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const { isAuthenticated } = useContext(AuthContext);
 
+  // Fetch cart items when user is authenticated
   useEffect(() => {
     const fetchCartItems = async () => {
+      if (!isAuthenticated) return; // Skip if not authenticated
+
       try {
-        const response = await axios.get("http://localhost:8000/api/cart/");
-        setCartItems(response.data);
+        const accessToken = localStorage.getItem("accessToken");
+        const response = await axios.get("http://localhost:8000/api/cart/", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Send the access token for authorization
+          },
+        });
+        setCartItems(response.data); // Set fetched cart items
       } catch (error) {
-        alert("Please log in to view your cart.");
+        console.error("Failed to fetch cart items:", error);
+        if (error.response && error.response.status === 401) {
+          alert("Session expired. Please log in again.");
+        } else {
+          alert("Error fetching cart items.");
+        }
       }
     };
 
-    if (isAuthenticated) {
-      fetchCartItems();
-    }
+    fetchCartItems();
   }, [isAuthenticated]);
 
+  // If not authenticated, show the login prompt
   if (!isAuthenticated) {
     return (
       <p className="text-center text-lg">
@@ -42,9 +54,9 @@ function Cart() {
           cartItems.map((item) => (
             <div
               key={item.id}
-              className="cart-item flex justify-between items-center py-4 border-b"
+              className="cart-item flex flex-col sm:flex-row justify-between items-center py-4 border-b"
             >
-              <div className="flex items-center">
+              <div className="flex items-center mb-4 sm:mb-0">
                 <img
                   src={item.product.image}
                   alt={item.product.name}
@@ -57,8 +69,8 @@ function Cart() {
                   </p>
                 </div>
               </div>
-              <div>
-                <p className="text-sm text-gray-600">
+              <div className="flex flex-col sm:flex-row items-center">
+                <p className="text-sm text-gray-600 mb-2 sm:mb-0">
                   Quantity: {item.quantity}
                 </p>
               </div>
