@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userCart, setUserCart] = useState([]);
 
+  // Fetch the products from the backend
   const fetchProducts = async () => {
     try {
       const response = await axios.get("http://localhost:8000/api/products/");
@@ -18,8 +20,53 @@ const ProductsPage = () => {
     }
   };
 
+  // Fetch the user's cart data
+  const fetchUserCart = async () => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      if (accessToken) {
+        const response = await axios.get("http://localhost:8000/api/cart/", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setUserCart(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching user cart:", error);
+    }
+  };
+
+  // Add product to the user's cart
+  const addToCart = async (productId) => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      alert("Please log in to add products to the cart.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/cart/add/",
+        { productId },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      // Update the user's cart after adding the product
+      setUserCart([...userCart, response.data]);
+      alert("Product added to cart!");
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      alert("Failed to add product to cart.");
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
+    fetchUserCart(); // Fetch the user cart data on component mount
   }, []);
 
   if (loading) return <p>Loading...</p>;
@@ -27,10 +74,8 @@ const ProductsPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">
-        Customers also bought
-      </h1>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-6">
+      <h1 className="text-3xl font-bold mb-8 text-center">Products</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.length > 0 ? (
           products.map((product) => (
             <div
@@ -82,7 +127,10 @@ const ProductsPage = () => {
                   <span className="text-3xl font-bold text-gray-900 dark:text-white">
                     ${product.price}
                   </span>
-                  <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                  <button
+                    onClick={() => addToCart(product.id)}
+                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  >
                     Add to cart
                   </button>
                 </div>
