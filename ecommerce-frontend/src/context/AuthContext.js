@@ -12,92 +12,114 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // Track loading state
 
-  // handle login with username and password
+  // Handle user login
   const handleLogin = async (username, password) => {
     try {
-      const data = await login(username, password); // Call the login function from API
-      localStorage.setItem("accessToken", data.access); // Store access token
-      localStorage.setItem("refreshToken", data.refresh); // Store refresh token
-      setIsAuthenticated(true); // Set authenticated state
-      await loadUserInfo(data.access); // Load user info using the access token
+      const data = await login(username, password); // API call for login
+      storeTokens(data.access, data.refresh); // Save tokens securely
+      setIsAuthenticated(true); // Update authentication state
+      await loadUserInfo(data.access); // Fetch user data
     } catch (error) {
-      console.error("Login failed:", error); // Handle login error
-      throw error; // Re-throw the error to be handled by the caller (Login.js)
+      console.error("Login failed:", error?.response?.data || error.message);
+      throw error; // Re-throw for further handling in UI
     }
   };
 
-  // handle registration with username, email, and password
+  // Handle user registration
   const handleRegister = async (username, email, password) => {
     try {
-      await register(username, email, password); // Call the register function from API
+      await register(username, email, password); // API call for registration
     } catch (error) {
-      console.error("Registration failed:", error); // Handle registration error
+      console.error("Registration failed:", error?.response?.data || error.message);
+      throw error; // Re-throw to notify UI
     }
   };
 
-  // handle logout and clear the authentication state
+  // Handle user logout
   const handleLogout = async () => {
     try {
-      const refresh = localStorage.getItem("refreshToken");
-      await logout(refresh); // Call the logout function from API
-      localStorage.removeItem("accessToken"); // Remove access token from localStorage
-      localStorage.removeItem("refreshToken"); // Remove refresh token from localStorage
-      setIsAuthenticated(false); // Set authenticated state to false
-      setUser(null); // Clear user data
+      const refresh = getRefreshToken();
+      if (refresh) {
+        await logout(refresh); // API call for logout
+      }
     } catch (error) {
-      console.error("Logout failed:", error); // Handle logout error
+      console.error("Logout failed:", error?.response?.data || error.message);
+    } finally {
+      clearAuthState(); // Clear tokens and reset state
     }
   };
 
-  // Memoizing the loadUserInfo function to prevent unnecessary re-creations
+  // Fetch user data and authenticate
   const loadUserInfo = useCallback(async (token) => {
     try {
-      const data = await getUserData(token); // Get user data from API
-      setUser(data); // Set user data in state
-      setIsAuthenticated(true); // Set authenticated state to true
+      const data = await getUserData(token); // Fetch user details
+      setUser(data); // Update user state
+      setIsAuthenticated(true); // Mark as authenticated
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        const newToken = await attemptTokenRefresh(); // Attempt to refresh the token
+      console.error("Failed to load user info:", error.message);
+      if (error.response?.status === 401) {
+        const newToken = await attemptTokenRefresh(); // Refresh token if expired
         if (newToken) {
-          await loadUserInfo(newToken); // Recursively load user info with new token
+          await loadUserInfo(newToken); // Retry with refreshed token
         } else {
-          handleLogout(); // Log out if token refresh fails
+          clearAuthState(); // Clear state if refresh fails
         }
-      } else {
-        console.error("Failed to load user info:", error); // Handle other errors
       }
     }
-  }, []); // Empty dependency array ensures this function is only created once
+  }, []);
 
-  // Attempt to refresh the token if it's expired
+  // Refresh token if expired
   const attemptTokenRefresh = async () => {
-    const refresh = localStorage.getItem("refreshToken");
-    if (!refresh) return null;
-
     try {
-      const data = await refreshToken(refresh); // Call the refresh token API
-      localStorage.setItem("accessToken", data.access); // Store new access token
-      return data.access; // Return the new access token
+      const refresh = getRefreshToken();
+      if (!refresh) return null;
+
+      const data = await refreshToken(refresh); // API call to refresh token
+      storeTokens(data.access, refresh); // Store new access token
+      return data.access;
     } catch (error) {
-      console.error("Token refresh failed:", error); // Handle token refresh error
+      console.error("Token refresh failed:", error.message);
+      clearAuthState(); // Clear state if refresh fails
       return null;
     }
   };
 
-  // UseEffect to load user info when component mounts
+  // Store tokens securely
+  const storeTokens = (access, refresh) => {
+    localStorage.setItem("accessToken", access);
+    localStorage.setItem("refreshToken", refresh);
+  };
+
+  // Clear tokens and authentication state
+  const clearAuthState = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    setIsAuthenticated(false);
+    setUser(null);
+  };
+
+  // Get refresh token from storage
+  const getRefreshToken = () => localStorage.getItem("refreshToken");
+
+  // Load user data on app startup
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      loadUserInfo(token); // Load user info if access token exists
+      loadUserInfo(token).finally(() => setLoading(false)); // Ensure loading state is updated
+    } else {
+      setLoading(false); // No token, loading complete
     }
-  }, [loadUserInfo]); // Dependency on memoized loadUserInfo
+  }, [loadUserInfo]);
 
+  // AuthContext provider value
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated,
         user,
+        loading, // Loading state for conditional rendering
         handleLogin,
         handleRegister,
         handleLogout,

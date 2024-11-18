@@ -8,6 +8,8 @@ from django.contrib.auth import authenticate
 
 from .models import Cart, CartItem, Product
 from django.contrib.auth.models import User
+from django.contrib.auth import logout
+from django.http import JsonResponse    
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -53,27 +55,28 @@ def login_user(request):
     })
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])  # Ensure user is authenticated
+@permission_classes([IsAuthenticated])
 def logout_user(request):
-    """
-    Log out the user by blacklisting the provided refresh token.
-    """
+    refresh_token = request.data.get('refresh')
+
+    if not refresh_token:
+        return Response(
+            {"error": "Refresh token is required."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
     try:
-        # Get the refresh token from the request body
-        refresh_token = request.data.get('refresh')
-
-        # Ensure the refresh token is provided
-        if not refresh_token:
-            return Response({"error": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Blacklist the refresh token
         token = RefreshToken(refresh_token)
-        token.blacklist()  # Blacklist the token so it cannot be used again
-        
-        return Response({"message": "User logged out successfully."}, status=status.HTTP_205_RESET_CONTENT)
-
+        token.blacklist()
+        return Response(
+            {"message": "Logged out successfully."},
+            status=status.HTTP_205_RESET_CONTENT
+        )
     except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": f"Logout failed: {str(e)}"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

@@ -10,4 +10,5 @@ urlpatterns = [
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('cart/add/', add_to_cart, name='add_to_cart'),
+    # path('api/logout/', logout_user, name='logout'),
 ]

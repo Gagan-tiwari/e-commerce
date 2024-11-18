@@ -11,6 +11,7 @@ import {
 import DropdownMenu from "./DropdownMenu";
 import { AuthContext } from "../context/AuthContext";
 import logo from "../assets/myName.png";
+import api from "../api/api";
 
 const categoriesData = {
   god: [
@@ -30,7 +31,7 @@ const categoriesData = {
 };
 
 function Navbar() {
-  const { isAuthenticated, user, handleLogout } = useContext(AuthContext);
+  const { isAuthenticated, user } = useContext(AuthContext);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [activeSubcategory, setActiveSubcategory] = useState(null);
@@ -48,6 +49,29 @@ function Navbar() {
     setActiveSubcategory(
       activeSubcategory === subcategory ? null : subcategory
     );
+  };
+  const fetchData = async () => {
+    try {
+      const response = await api.get("/some-endpoint/");
+      console.log(response.data);
+    } catch (error) {
+      console.error("API call failed:", error);
+    }
+  };
+
+  fetchData();
+
+  const { setIsAuthenticated, setUser } = useContext(AuthContext); // Destructure context setters
+  const { handleLogout } = useContext(AuthContext);
+
+  const handleLogoutClick = async () => {
+    try {
+      console.log("Logout initiated");
+      await handleLogout();
+      console.log("Logout successful");
+    } catch (error) {
+      console.error("Network error during logout:", error);
+    }
   };
 
   return (
@@ -95,8 +119,8 @@ function Navbar() {
                 </span>
               </Link>
               <button
-                onClick={handleLogout}
-                className="dropdown-content hidden group-hover:block absolute right-0 mt-6 p-4 space-x-2 bg-white shadow-lg"
+                onClick={handleLogoutClick}
+                className="dropdown-content hidden group-hover:block absolute right-0 mt-5 p-4 space-x-2 bg-white shadow-lg"
               >
                 <span className="text-gray-700 hover:bg-orange-500 hover:text-white p-2">
                   Logout
@@ -176,9 +200,8 @@ function Navbar() {
             <div key={title} className="relative w-full">
               <button
                 onClick={() => toggleDropdown(title)}
-                className={`flex justify-between items-center w-full p-2 text-gray-700 ${
-                  activeDropdown === title ? "bg-orange-600" : "bg-white"
-                } border border-black rounded-md`}
+                className={`flex justify-between items-center w-full p-2 text-gray-700 ${activeDropdown === title ? "bg-orange-600" : "bg-white"
+                  } border border-black rounded-md`}
               >
                 {title}
                 <span className="text-gray-500">
